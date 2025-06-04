@@ -1,45 +1,63 @@
 """
-Модуль для тестирования класса Calculator.
+Модуль тестирования функциональности класса Calculator.
 """
 
 import unittest
 from calculator import Calculator
 
 
-class TestCalculator(unittest.TestCase):
-    """Тесты для класса Calculator."""
+class CalculatorTestCase(unittest.TestCase):
+    """Тест-кейс для проверки работы Calculator."""
 
     def setUp(self):
-        """Создание экземпляра калькулятора перед каждым тестом."""
         self.calc = Calculator()
 
-    def test_simple_operations(self):
-        """Проверка простых арифметических операций."""
-        self.assertEqual(self.calc.calculate("2 + 2"), 4)
-        self.assertEqual(self.calc.calculate("5 - 3"), 2)
-        self.assertEqual(self.calc.calculate("4 * 3"), 12)
-        self.assertEqual(self.calc.calculate("10 / 2"), 5)
+    def test_basic_arithmetic(self):
+        """Арифметика: сложение, вычитание, умножение, деление."""
+        test_cases = [
+            ("2 + 2", 4),
+            ("5 - 3", 2),
+            ("4 * 3", 12),
+            ("10 / 2", 5),
+        ]
+        for expression, expected in test_cases:
+            with self.subTest(expr=expression):
+                self.assertEqual(self.calc.calculate(expression), expected)
 
-    def test_operator_precedence(self):
-        """Проверка приоритетов операторов и скобок."""
-        self.assertEqual(self.calc.calculate("2 + 3 * 4"), 14)
-        self.assertEqual(self.calc.calculate("(2 + 3) * 4"), 20)
-        self.assertEqual(self.calc.calculate("10 - 4 / 2"), 8)
+    def test_precedence_and_parentheses(self):
+        """Приоритеты операторов и скобки."""
+        test_cases = [
+            ("2 + 3 * 4", 14),
+            ("(2 + 3) * 4", 20),
+            ("10 - 4 / 2", 8),
+        ]
+        for expression, expected in test_cases:
+            with self.subTest(expr=expression):
+                self.assertEqual(self.calc.calculate(expression), expected)
 
-    def test_division_by_zero(self):
-        """Проверка деления на ноль."""
+    def test_zero_division(self):
+        """Деление на ноль вызывает ZeroDivisionError."""
         with self.assertRaises(ZeroDivisionError):
             self.calc.calculate("5 / 0")
 
-    def test_invalid_expressions(self):
-        """Проверка обработки некорректных выражений."""
-        with self.assertRaises(ValueError):
-            self.calc.calculate("2 +")
-        with self.assertRaises(ValueError):
-            self.calc.calculate("(2 + 3")
-        with self.assertRaises(ValueError):
-            self.calc.calculate("2 & 3")
+    def test_invalid_inputs(self):
+        """Некорректные выражения вызывают ValueError."""
+        invalid_expressions = ["2 +", "(2 + 3", "2 & 3"]
+        for expr in invalid_expressions:
+            with self.subTest(expr=expr):
+                with self.assertRaises(ValueError):
+                    self.calc.calculate(expr)
+
+    def test_infix_to_postfix(self):
+        """Преобразование инфиксной записи в постфиксную."""
+        test_cases = [
+            ("2 + 3", "2 3 +"),
+            ("2 + 3 * 4", "2 3 4 * +"),
+        ]
+        for expression, expected in test_cases:
+            with self.subTest(expr=expression):
+                self.assertEqual(self.calc.infix_to_postfix(expression), expected)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
