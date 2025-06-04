@@ -56,7 +56,7 @@ class CalculatorTestCase(unittest.TestCase):
         ]
         for expression, expected in test_cases:
             with self.subTest(expr=expression):
-                self.assertEqual(self.calc.infix_to_postfix(expression), expected)
+                self.assertEqual(self.calc._to_postfix(expression), expected)
 
 
 if __name__ == "__main__":
